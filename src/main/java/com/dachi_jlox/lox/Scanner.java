@@ -1,4 +1,4 @@
-package com.dachi_jlox;
+package com.dachi_jlox.lox;
 
 import java.util.ArrayList;
 import java.util.HashMap;

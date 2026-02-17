@@ -1,4 +1,4 @@
-package com.dachi_jlox;
+package com.dachi_jlox.lox;
 
 public class Token {
     private final TokenType type;

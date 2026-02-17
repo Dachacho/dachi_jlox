@@ -1,4 +1,4 @@
-package com.dachi_jlox;
+package com.dachi_jlox.lox;
 
 public enum TokenType {
     //single character tokens
