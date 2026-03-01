@@ -24,7 +24,7 @@ public class Parser {
     }
 
     private Expr ternary(){
-        Expr expr = equility();
+        Expr expr = equality();
 
         if(match(TokenType.QUESTION_MARK)){
             Expr thenBranch = expression();
@@ -36,7 +36,10 @@ public class Parser {
         return expr;
     }
 
-    private Expr equility() {
+    private Expr equality() {
+        if(match(TokenType.EQUAL_EQUAL, TokenType.BANG_EQUAL)){
+            throw error(previous(), "missing left operand.");
+        }
         Expr expr = comparison();
 
         while (match(TokenType.BANG_EQUAL, TokenType.EQUAL_EQUAL)) {
@@ -49,6 +52,9 @@ public class Parser {
     }
 
     private Expr comparison() {
+        if(match(TokenType.GREATER, TokenType.GREATER_EQUAL, TokenType.LESS, TokenType.LESS_EQUAL)){
+            throw error(previous(), "missing left operand.");
+        }
         Expr expr = term();
 
         while(match(TokenType.GREATER, TokenType.GREATER_EQUAL, TokenType.LESS, TokenType.LESS_EQUAL)) {
@@ -61,6 +67,9 @@ public class Parser {
     }
 
     private Expr term(){
+        if(match(TokenType.PLUS, TokenType.MINUS)){
+            throw error(previous(), "missing left operand.");
+        }
         Expr expr = factor();
 
         while(match(TokenType.PLUS, TokenType.MINUS)) {
@@ -73,6 +82,9 @@ public class Parser {
     }
 
     private Expr factor(){
+        if(match(TokenType.STAR, TokenType.SLASH)){
+            throw error(previous(), "missing left operand.");
+        }
         Expr expr = unary();
 
         while(match(TokenType.STAR, TokenType.SLASH)) {
@@ -121,9 +133,10 @@ public class Parser {
         return false;
     }
 
-    private Token consume(TokenType type, String message) {
+    private void consume(TokenType type, String message) {
         if (check(type)) {
-            return advance();
+            advance();
+            return;
         }
         throw error(peek(), message);
     }
