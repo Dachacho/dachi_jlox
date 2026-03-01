@@ -3,11 +3,20 @@ package com.dachi_jlox.lox;
 import java.util.List;
 
 public class Parser {
+    private static class ParseError extends RuntimeException {}
     private final List<Token> tokens;
     private int current = 0;
 
     public Parser(List<Token> tokens) {
         this.tokens = tokens;
+    }
+
+    public Expr parse(){
+        try{
+            return expression();
+        }catch(ParseError e){
+            return null;
+        }
     }
 
     private Expr expression() {
@@ -82,12 +91,11 @@ public class Parser {
 
         if(match(TokenType.LEFT_PAREN)){
             Expr expr = expression();
-            //errors need to be added
-//            consume(TokenType.RIGHT_PAREN, "Expect ')' after expression.");
-            return new  Expr.Literal(expr);
+            consume(TokenType.RIGHT_PAREN, "Expect ')' after expression.");
+            return new Expr.Grouping(expr);
         }
 
-        return null;
+        throw error(peek(), "Expected an expression.");
     }
 
     private boolean match(TokenType... types) {
@@ -98,6 +106,42 @@ public class Parser {
             }
         }
         return false;
+    }
+
+    private Token consume(TokenType type, String message) {
+        if (check(type)) {
+            return advance();
+        }
+        throw error(peek(), message);
+    }
+
+    private ParseError error(Token token, String message){
+        Lox.error(token, message);
+        return new ParseError();
+    }
+
+    private void synchronize(){
+        advance();
+
+        while(!isAtEnd()){
+            if(previous().getType() == TokenType.SEMICOLON){
+                return;
+            }
+
+            switch(peek().getType()){
+                case TokenType.CLASS:
+                case TokenType.FUN:
+                case TokenType.WHILE:
+                case TokenType.FOR:
+                case TokenType.IF:
+                case TokenType.VAR:
+                case TokenType.PRINT:
+                case TokenType.RETURN:
+                    return;
+            }
+
+            advance();
+        }
     }
 
     private boolean check(TokenType type) {
