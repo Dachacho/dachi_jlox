@@ -94,6 +94,12 @@ public class Scanner {
                     addToken(TokenType.SLASH);
                 }
                 break;
+            case '?':
+                addToken(TokenType.QUESTION_MARK);
+                break;
+            case ':':
+                addToken(TokenType.COLON);
+                break;
             case ' ':
             case '\r':
             case '\t':

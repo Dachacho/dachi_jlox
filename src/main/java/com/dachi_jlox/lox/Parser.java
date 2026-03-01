@@ -20,7 +20,20 @@ public class Parser {
     }
 
     private Expr expression() {
-        return equility();
+        return ternary();
+    }
+
+    private Expr ternary(){
+        Expr expr = equility();
+
+        if(match(TokenType.QUESTION_MARK)){
+            Expr thenBranch = expression();
+            consume(TokenType.COLON, "Expected ':'");
+            Expr elseBranch = ternary();
+            expr = new Expr.Ternary(expr, thenBranch, elseBranch);
+        }
+
+        return expr;
     }
 
     private Expr equility() {
