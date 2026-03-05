@@ -65,6 +65,13 @@ public class Interpreter implements Expr.Visitor<Object> {
                 yield (double)left * (double)right;
             }
             case TokenType.PLUS -> {
+                //stringify coming in clutch
+                if(left instanceof Double && right instanceof String) {
+                    yield stringify(left) + right;
+                }
+                if(left instanceof String && right instanceof Double) {
+                    yield left + stringify(right);
+                }
                 if(left instanceof Double && right instanceof Double) {
                     yield (double) left + (double)right;
                 }
