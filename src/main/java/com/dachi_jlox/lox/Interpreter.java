@@ -19,31 +19,49 @@ public class Interpreter implements Expr.Visitor<Object> {
 
         return switch (expr.operator.getType()){
             case TokenType.GREATER -> {
-                checkNumberOperands(expr.operator, right, left);
+                if (left instanceof String && right instanceof String) {
+                    yield ((String) left).compareTo((String) right) > 0;
+                }
+                checkNumberOperands(expr.operator, left, right);
                 yield (double)left > (double)right;
             }
             case TokenType.GREATER_EQUAL -> {
-                checkNumberOperands(expr.operator, right, left);
+                if (left instanceof String && right instanceof String) {
+                    yield ((String) left).compareTo((String) right) >= 0;
+                }
+                checkNumberOperands(expr.operator, left, right);
                 yield (double)left >= (double)right;
             }
             case TokenType.LESS -> {
-                checkNumberOperands(expr.operator, right, left);
+                if (left instanceof String && right instanceof String) {
+                    yield ((String) left).compareTo((String) right) < 0;
+                }
+                checkNumberOperands(expr.operator, left, right);
                 yield (double)left < (double)right;
             }
             case TokenType.LESS_EQUAL -> {
-                checkNumberOperands(expr.operator, right, left);
+                if (left instanceof String && right instanceof String) {
+                    yield ((String) left).compareTo((String) right) < 0;
+                }
+                checkNumberOperands(expr.operator, left, right);
                 yield (double)left <= (double)right;
             }
             case TokenType.MINUS -> {
-                checkNumberOperands(expr.operator, right, left);
+                checkNumberOperands(expr.operator, left, right);
                 yield (double)left - (double)right;
             }
             case TokenType.SLASH ->  {
-                checkNumberOperands(expr.operator, right, left);
+                checkNumberOperands(expr.operator, left, right);
                 yield (double)left / (double)right;
             }
             case TokenType.STAR -> {
-                checkNumberOperands(expr.operator, right, left);
+                if (left instanceof String && right instanceof Double) {
+                    yield ((String) left).repeat((int) ((Double) right).intValue());
+                }
+                if (left instanceof Double && right instanceof String) {
+                    yield ((String) right).repeat((int) ((Double) left).intValue());
+                }
+                checkNumberOperands(expr.operator, left, right);
                 yield (double)left * (double)right;
             }
             case TokenType.PLUS -> {
