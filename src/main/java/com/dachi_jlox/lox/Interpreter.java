@@ -52,6 +52,9 @@ public class Interpreter implements Expr.Visitor<Object> {
             }
             case TokenType.SLASH ->  {
                 checkNumberOperands(expr.operator, left, right);
+                if((double) right == 0.0){
+                    throw new RuntimeError(expr.operator, "Cannot divide by zero.");
+                }
                 yield (double)left / (double)right;
             }
             case TokenType.STAR -> {
