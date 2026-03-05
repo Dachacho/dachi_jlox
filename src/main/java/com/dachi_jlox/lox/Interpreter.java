@@ -1,6 +1,16 @@
 package com.dachi_jlox.lox;
 
 public class Interpreter implements Expr.Visitor<Object> {
+    @Override
+    public Object visitTernaryExpr(Expr.Ternary expr) {
+        Object condition = evaluate(expr.condition);
+
+        if((Boolean) condition){
+            return evaluate(expr.thenBranch);
+        }else{
+            return evaluate(expr.elseBranch);
+        }
+    }
 
     @Override
     public Object visitBinaryExpr(Expr.Binary expr) {
@@ -108,18 +118,32 @@ public class Interpreter implements Expr.Visitor<Object> {
         return left.equals(right);
     }
 
-    @Override
-    public Object visitTernaryExpr(Expr.Ternary expr) {
-        Object condition = evaluate(expr.condition);
-
-        if((Boolean) condition){
-            return evaluate(expr.thenBranch);
-        }else{
-            return evaluate(expr.elseBranch);
+    public String stringify(Object obj) {
+        if(obj == null){
+            return "nil";
         }
+
+        if(obj instanceof Double){
+            String text = obj.toString();
+            if(text.endsWith(".0")){
+                text = text.substring(0, text.length()-2);
+            }
+            return text;
+        }
+
+        return obj.toString();
     }
 
     private Object evaluate(Expr expr) {
         return expr.accept(this);
+    }
+
+    public void interpret(Expr expression){
+        try{
+            Object value = evaluate(expression);
+            System.out.println(stringify(value));
+        }catch(RuntimeError error){
+            Lox.runtimeError(error);
+        }
     }
 }

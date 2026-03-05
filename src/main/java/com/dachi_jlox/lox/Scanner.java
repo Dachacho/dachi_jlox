@@ -79,7 +79,7 @@ public class Scanner {
                         advance();
                     }
                 }else if(match('*')){
-                    while(!isAtEnd() && (peek() == '*' && peekNext() == '/')){
+                    while(!isAtEnd() && !(peek() == '*' && peekNext() == '/')){
                         if(peek() == '\n'){
                             line++;
                         }
@@ -166,7 +166,7 @@ public class Scanner {
             return false;
         }
 
-        if(current != expected){
+        if(source.charAt(current) != expected){
             return false;
         }
 
