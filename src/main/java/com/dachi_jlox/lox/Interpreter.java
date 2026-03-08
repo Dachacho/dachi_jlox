@@ -1,6 +1,8 @@
 package com.dachi_jlox.lox;
 
-public class Interpreter implements Expr.Visitor<Object> {
+import java.util.List;
+
+public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     @Override
     public Object visitTernaryExpr(Expr.Ternary expr) {
         Object condition = evaluate(expr.condition);
@@ -166,12 +168,30 @@ public class Interpreter implements Expr.Visitor<Object> {
         return expr.accept(this);
     }
 
-    public void interpret(Expr expression){
+    private void execute(Stmt statement){
+        statement.accept(this);
+    }
+
+    public void interpret(List<Stmt> statements) {
         try{
-            Object value = evaluate(expression);
-            System.out.println(stringify(value));
-        }catch(RuntimeError error){
-            Lox.runtimeError(error);
+           for (Stmt statement : statements) {
+               execute(statement);
+           }
+        }catch(RuntimeError e){
+            Lox.runtimeError(e);
         }
+    }
+
+    @Override
+    public Void visitExpressionStmt(Stmt.Expression stmt) {
+        evaluate(stmt.expression);
+        return null;
+    }
+
+    @Override
+    public Void visitPrintStmt(Stmt.Print stmt) {
+        Object value = evaluate(stmt.expression);
+        System.out.println(stringify(value));
+        return null;
     }
 }

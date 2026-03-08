@@ -1,5 +1,7 @@
 package com.dachi_jlox.lox;
 
+import java.util.List;
+
 abstract class Expr {
     abstract <R> R accept(Visitor<R> visitor);
 
