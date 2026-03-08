@@ -6,13 +6,44 @@ abstract class Expr {
     abstract <R> R accept(Visitor<R> visitor);
 
     interface Visitor<R> {
+        R visitAssignExpr (Assign expr);
+        R visitTernaryExpr (Ternary expr);
         R visitBinaryExpr (Binary expr);
         R visitGroupingExpr (Grouping expr);
         R visitLiteralExpr (Literal expr);
         R visitUnaryExpr (Unary expr);
-        R visitTernaryExpr (Ternary expr);
         R visitVariableExpr (Variable expr);
     }
+    static class Assign extends Expr {
+        @Override
+        <R> R accept(Visitor<R> visitor) {
+            return visitor.visitAssignExpr(this);
+        }
+        final Token name;
+        final Expr value;
+
+        Assign(Token name, Expr value) {
+            this.name = name;
+            this.value = value;
+        }
+    }
+
+    static class Ternary extends Expr {
+        @Override
+        <R> R accept(Visitor<R> visitor) {
+            return visitor.visitTernaryExpr(this);
+        }
+        final Expr condition;
+        final Expr thenBranch;
+        final Expr elseBranch;
+
+        Ternary(Expr condition, Expr thenBranch, Expr elseBranch) {
+            this.condition = condition;
+            this.thenBranch = thenBranch;
+            this.elseBranch = elseBranch;
+        }
+    }
+
     static class Binary extends Expr {
         @Override
         <R> R accept(Visitor<R> visitor) {
@@ -64,22 +95,6 @@ abstract class Expr {
         Unary(Token operator, Expr right) {
             this.operator = operator;
             this.right = right;
-        }
-    }
-
-    static class Ternary extends Expr {
-        @Override
-        <R> R accept(Visitor<R> visitor) {
-            return visitor.visitTernaryExpr(this);
-        }
-        final Expr condition;
-        final Expr thenBranch;
-        final Expr elseBranch;
-
-        Ternary(Expr condition, Expr thenBranch, Expr elseBranch) {
-            this.condition = condition;
-            this.thenBranch = thenBranch;
-            this.elseBranch = elseBranch;
         }
     }
 
