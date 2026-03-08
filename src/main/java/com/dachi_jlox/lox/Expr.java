@@ -11,6 +11,7 @@ abstract class Expr {
         R visitLiteralExpr (Literal expr);
         R visitUnaryExpr (Unary expr);
         R visitTernaryExpr (Ternary expr);
+        R visitVariableExpr (Variable expr);
     }
     static class Binary extends Expr {
         @Override
@@ -79,6 +80,18 @@ abstract class Expr {
             this.condition = condition;
             this.thenBranch = thenBranch;
             this.elseBranch = elseBranch;
+        }
+    }
+
+    static class Variable extends Expr {
+        @Override
+        <R> R accept(Visitor<R> visitor) {
+            return visitor.visitVariableExpr(this);
+        }
+        final Token name;
+
+        Variable(Token name) {
+            this.name = name;
         }
     }
 
