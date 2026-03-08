@@ -3,7 +3,7 @@ package com.dachi_jlox.lox;
 import java.util.List;
 
 public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
-    private final Environment environment = new Environment();
+    private Environment environment = new Environment();
     @Override
     public Object visitVariableExpr(Expr.Variable expr) {
         return environment.get(expr.name);
@@ -185,6 +185,19 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         statement.accept(this);
     }
 
+    private void executeBlock(List<Stmt> statements, Environment environment){
+        Environment previous = this.environment;
+        try{
+            this.environment = environment;
+
+            for (Stmt statement : statements){
+                execute(statement);
+            }
+        }finally{
+            this.environment = previous;
+        }
+    }
+
     public void interpret(List<Stmt> statements) {
         try{
            for (Stmt statement : statements) {
@@ -193,6 +206,12 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         }catch(RuntimeError e){
             Lox.runtimeError(e);
         }
+    }
+
+    @Override
+    public Void visitBlockStmt(Stmt.Block stmt) {
+        executeBlock(stmt.statements, new Environment(environment));
+        return null;
     }
 
     @Override
