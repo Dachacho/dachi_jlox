@@ -208,6 +208,11 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         }
     }
 
+    public void interpretExpression(Expr expression){
+        Object value = evaluate(expression);
+        System.out.println(stringify(value));
+    }
+
     @Override
     public Void visitBlockStmt(Stmt.Block stmt) {
         executeBlock(stmt.statements, new Environment(environment));

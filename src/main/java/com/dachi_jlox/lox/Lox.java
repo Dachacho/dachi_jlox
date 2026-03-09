@@ -58,8 +58,13 @@ public class Lox {
             return;
         }
 
+        if(stmts.size() == 1 && stmts.getFirst() instanceof Stmt.Expression stmt){
+            interpreter.interpretExpression(stmt.expression);
+        }else{
+            interpreter.interpret(stmts);
+        }
+
 //        System.out.println(new AstPrinter().print(expression));
-        interpreter.interpret(stmts);
     }
 
     static void error(int line, String message) {
