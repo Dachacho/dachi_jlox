@@ -24,6 +24,14 @@ public class AstPrinter implements Expr.Visitor<String>{
     }
 
     @Override
+    public String visitLogicalExpr(Expr.Logical expr) {
+        if (expr.operator.getType() == TokenType.OR) {
+            return parenthesize("or", expr.left, expr.right);
+        }
+        return  parenthesize("and", expr.left, expr.right);
+    }
+
+    @Override
     public String visitUnaryExpr(Expr.Unary expr) {
         return parenthesize(expr.operator.getLexeme(), expr.right);
     }
