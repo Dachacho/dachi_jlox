@@ -1,6 +1,7 @@
 package com.dachi_jlox.lox;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Parser {
@@ -37,6 +38,9 @@ public class Parser {
     }
 
     private Stmt statement() {
+        if(match(TokenType.FOR)){
+            return forStatement();
+        }
         if(match(TokenType.WHILE)){
             return whileStatement();
         }
@@ -52,18 +56,62 @@ public class Parser {
         return expressionStatement();
     }
 
+    private Stmt forStatement() {
+        consume(TokenType.LEFT_PAREN, "Expect '(' after for statement.");
+
+        Stmt initializer;
+        if(match(TokenType.SEMICOLON)){
+            initializer = null;
+        }else if(match(TokenType.VAR)){
+            initializer = varDeclaration();
+        }else{
+            initializer = expressionStatement();
+        }
+
+        Expr condition = null;
+        if(!check(TokenType.SEMICOLON)){
+            condition = expression();
+        }
+
+        consume(TokenType.SEMICOLON, "Expect ';' after for statement.");
+
+        Expr increment = null;
+        if(!check(TokenType.RIGHT_PAREN)){
+            increment = expression();
+        }
+
+        consume(TokenType.RIGHT_PAREN, "Expect ')' after for statement.");
+
+        Stmt body = statement();
+
+        if(increment != null){
+            body = new Stmt.Block(Arrays.asList(body, new Stmt.Expression(increment)));
+        }
+
+        if(condition == null){
+            condition = new Expr.Literal(true);
+        }
+        body = new Stmt.While(condition, body);
+
+        if(initializer != null){
+            body = new Stmt.Block(Arrays.asList(initializer, body));
+        }
+
+        return body;
+    }
+
     private Stmt whileStatement() {
-        consume(TokenType.LEFT_PAREN, "Expected '(' after while statement.");
+        consume(TokenType.LEFT_PAREN, "Expect '(' after while statement.");
         Expr condition = expression();
-        consume(TokenType.RIGHT_PAREN, "Expected ')' after while statement.");
+        consume(TokenType.RIGHT_PAREN, "Expect ')' after while statement.");
         Stmt body = statement();
         return new Stmt.While(condition, body);
     }
 
     private Stmt ifStatement() {
-        consume(TokenType.LEFT_PAREN, "Expected '(' after if statement.");
+        consume(TokenType.LEFT_PAREN, "Expect '(' after if statement.");
         Expr condition = expression();
-        consume(TokenType.RIGHT_PAREN, "Expected ')' after if statement.");
+        consume(TokenType.RIGHT_PAREN, "Expect ')' after if statement.");
 
         Stmt thenBranch = statement();
         Stmt elseBranch = null;
