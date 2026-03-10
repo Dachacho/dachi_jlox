@@ -37,6 +37,9 @@ public class Parser {
     }
 
     private Stmt statement() {
+        if(match(TokenType.WHILE)){
+            return whileStatement();
+        }
         if(match(TokenType.IF)){
             return ifStatement();
         }
@@ -47,6 +50,14 @@ public class Parser {
             return new Stmt.Block(block());
         }
         return expressionStatement();
+    }
+
+    private Stmt whileStatement() {
+        consume(TokenType.LEFT_PAREN, "Expected '(' after while statement.");
+        Expr condition = expression();
+        consume(TokenType.RIGHT_PAREN, "Expected ')' after while statement.");
+        Stmt body = statement();
+        return new Stmt.While(condition, body);
     }
 
     private Stmt ifStatement() {
