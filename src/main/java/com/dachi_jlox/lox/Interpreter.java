@@ -290,6 +290,29 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     }
 
     @Override
+    public Void visitForStmt(Stmt.For stmt) {
+        if(stmt.initializer != null ) {
+            execute(stmt.initializer);
+        }
+
+        while(stmt.condition == null || isTruthy(evaluate(stmt.condition))){
+            try {
+                execute(stmt.body);
+            }catch(ContinueSignal e){
+                // by not having continue it won't get fucked
+            }catch (BreakSignal e){
+                break;
+            }
+
+            if(stmt.increment != null){
+                evaluate(stmt.increment);
+            }
+        }
+
+        return null;
+    }
+
+    @Override
     public Void visitBreakStmt(Stmt.Break stmt) {
         throw new BreakSignal();
     }
