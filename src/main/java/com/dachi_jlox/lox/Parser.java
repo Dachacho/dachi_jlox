@@ -8,6 +8,7 @@ public class Parser {
     private static class ParseError extends RuntimeException {}
     private final List<Token> tokens;
     private int current = 0;
+    private int loopDepth = 0;
 
     public Parser(List<Token> tokens) {
         this.tokens = tokens;
@@ -38,6 +39,12 @@ public class Parser {
     }
 
     private Stmt statement() {
+        if(match(TokenType.BREAK)){
+            return breakStatement();
+        }
+        if(match(TokenType.CONTINUE)){
+            return continueStatement();
+        }
         if(match(TokenType.FOR)){
             return forStatement();
         }
@@ -54,6 +61,24 @@ public class Parser {
             return new Stmt.Block(block());
         }
         return expressionStatement();
+    }
+
+    private Stmt breakStatement() {
+        Token keyword = previous();
+        if(loopDepth == 0){
+            error(keyword, "Can't break without a loop.");
+        }
+        consume(TokenType.SEMICOLON, "Expect ';' after break.");
+        return new Stmt.Break(keyword);
+    }
+
+    private Stmt continueStatement() {
+        Token keyword = previous();
+        if(loopDepth == 0){
+            error(keyword, "Can't continue without a loop.");
+        }
+        consume(TokenType.SEMICOLON, "Expect ';' after continue.");
+        return new Stmt.Continue(keyword);
     }
 
     private Stmt forStatement() {
@@ -82,7 +107,9 @@ public class Parser {
 
         consume(TokenType.RIGHT_PAREN, "Expect ')' after for statement.");
 
+        loopDepth++;
         Stmt body = statement();
+        loopDepth--;
 
         if(increment != null){
             body = new Stmt.Block(Arrays.asList(body, new Stmt.Expression(increment)));
@@ -104,7 +131,9 @@ public class Parser {
         consume(TokenType.LEFT_PAREN, "Expect '(' after while statement.");
         Expr condition = expression();
         consume(TokenType.RIGHT_PAREN, "Expect ')' after while statement.");
+        loopDepth++;
         Stmt body = statement();
+        loopDepth--;
         return new Stmt.While(condition, body);
     }
 
