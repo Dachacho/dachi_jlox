@@ -42,6 +42,9 @@ public class Parser {
     }
 
     private Stmt statement() {
+        if(match(TokenType.RETURN)){
+            return returnStatement();
+        }
         if(match(TokenType.BREAK)){
             return breakStatement();
         }
@@ -64,6 +67,17 @@ public class Parser {
             return new Stmt.Block(block());
         }
         return expressionStatement();
+    }
+
+    private Stmt returnStatement() {
+        Token keyword = previous();
+        Expr value = null;
+        while(!check(TokenType.SEMICOLON)){
+            value = expression();
+        }
+
+        consume(TokenType.SEMICOLON, "Expect ';' after return value.");
+        return new Stmt.Return(keyword, value);
     }
 
     private Stmt breakStatement() {
