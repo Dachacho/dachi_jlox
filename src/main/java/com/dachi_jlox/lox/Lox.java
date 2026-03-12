@@ -58,6 +58,13 @@ public class Lox {
             return;
         }
 
+        Resolver resolver = new Resolver(interpreter);
+        resolver.resolve(stmts);
+
+        if(hadError){
+            return;
+        }
+
         if(stmts.size() == 1 && stmts.getFirst() instanceof Stmt.Expression stmt){
             interpreter.interpretExpression(stmt.expression);
         }else{
