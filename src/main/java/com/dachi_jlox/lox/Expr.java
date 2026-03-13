@@ -10,6 +10,8 @@ abstract class Expr {
         R visitTernaryExpr (Ternary expr);
         R visitBinaryExpr (Binary expr);
         R visitCallExpr (Call expr);
+        R visitGetExpr (Get expr);
+        R visitSetExpr (Set expr);
         R visitGroupingExpr (Grouping expr);
         R visitLiteralExpr (Literal expr);
         R visitLogicalExpr (Logical expr);
@@ -75,6 +77,36 @@ abstract class Expr {
             this.callee = callee;
             this.paren = paren;
             this.arguments = arguments;
+        }
+    }
+
+    static class Get extends Expr {
+        @Override
+        <R> R accept(Visitor<R> visitor) {
+            return visitor.visitGetExpr(this);
+        }
+        final Expr object;
+        final Token name;
+
+        Get(Expr object, Token name) {
+            this.object = object;
+            this.name = name;
+        }
+    }
+
+    static class Set extends Expr {
+        @Override
+        <R> R accept(Visitor<R> visitor) {
+            return visitor.visitSetExpr(this);
+        }
+        final Expr object;
+        final Token name;
+        final Expr value;
+
+        Set(Expr object, Token name, Expr value) {
+            this.object = object;
+            this.name = name;
+            this.value = value;
         }
     }
 
