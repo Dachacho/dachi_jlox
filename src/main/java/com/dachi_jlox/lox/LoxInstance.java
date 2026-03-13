@@ -16,6 +16,11 @@ public class LoxInstance {
             return fields.get(name.getLexeme());
         }
 
+        LoxFunction method = klass.findMethod(name.getLexeme());
+        if(method != null){
+            return method;
+        }
+
         throw new RuntimeError(name, "Undefined field name " + name.getLexeme() + ".");
     }
 
