@@ -18,10 +18,11 @@ public class LoxInstance {
 
         LoxFunction method = klass.findMethod(name.getLexeme());
         if(method != null){
-            return method;
+            return method.bind(this);
         }
 
-        throw new RuntimeError(name, "Undefined field name " + name.getLexeme() + ".");
+
+        throw new RuntimeError(name, "Undefined property " + name.getLexeme() + ".");
     }
 
     public void set(Token name, Object value){

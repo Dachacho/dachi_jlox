@@ -12,6 +12,7 @@ abstract class Expr {
         R visitCallExpr (Call expr);
         R visitGetExpr (Get expr);
         R visitSetExpr (Set expr);
+        R visitThisExpr (This expr);
         R visitGroupingExpr (Grouping expr);
         R visitLiteralExpr (Literal expr);
         R visitLogicalExpr (Logical expr);
@@ -107,6 +108,18 @@ abstract class Expr {
             this.object = object;
             this.name = name;
             this.value = value;
+        }
+    }
+
+    static class This extends Expr {
+        @Override
+        <R> R accept(Visitor<R> visitor) {
+            return visitor.visitThisExpr(this);
+        }
+        final Token keyword;
+
+        This(Token keyword) {
+            this.keyword = keyword;
         }
     }
 
