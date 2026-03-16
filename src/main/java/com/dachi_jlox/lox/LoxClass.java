@@ -6,10 +6,12 @@ import java.util.Map;
 public class LoxClass implements LoxCallable{
     final String name;
     private final Map<String, LoxFunction> methods;
+    private final Map<String, LoxFunction> staticMethods;
 
-    public LoxClass(String name,  Map<String, LoxFunction> methods) {
+    public LoxClass(String name,  Map<String, LoxFunction> methods, Map<String, LoxFunction> staticMethods) {
         this.name = name;
         this.methods = methods;
+        this.staticMethods = staticMethods;
     }
 
     public LoxFunction findMethod(String name){
@@ -18,6 +20,22 @@ public class LoxClass implements LoxCallable{
         }
 
         return null;
+    }
+
+    public LoxFunction findStaticMethod(String name){
+        if(staticMethods.containsKey(name)){
+            return staticMethods.get(name);
+        }
+        return null;
+    }
+
+    public Object get(Token name){
+        LoxFunction method = findStaticMethod(name.getLexeme());
+        if(method != null){
+            return method;
+        }
+
+        throw new RuntimeError(name, name.getLexeme() + " is not a static function on this class.");
     }
 
     @Override
