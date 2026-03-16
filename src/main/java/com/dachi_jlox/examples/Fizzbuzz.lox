@@ -1,0 +1,21 @@
+fun isDivisible(n, d){
+    var x = n;
+    while(x > 0){
+        x = x - d;
+    }
+
+    return x == 0;
+}
+
+for (var i = 1; i <= 30; i = i + 1) {
+    if (isDivisible(i, 15)) {
+      print "FizzBuzz";
+    } else if (isDivisible(i, 3)) {
+      print "Fizz";
+    } else if (isDivisible(i, 5)) {
+      print "Buzz";
+    } else {
+      print i;
+    }
+}
+
