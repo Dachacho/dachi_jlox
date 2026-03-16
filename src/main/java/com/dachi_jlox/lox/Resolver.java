@@ -341,6 +341,7 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
         for(int i = scopes.size() - 1; i >= 0; i--) {
             if(scopes.get(i).containsKey(name.getLexeme())) {
                 interpreter.resolve(expr, scopes.size() - 1 - i);
+                return;
             }
         }
     }

@@ -98,7 +98,7 @@ public class Parser {
     private Stmt returnStatement() {
         Token keyword = previous();
         Expr value = null;
-        while(!check(TokenType.SEMICOLON)){
+        if(!check(TokenType.SEMICOLON)){
             value = expression();
         }
 
@@ -234,7 +234,7 @@ public class Parser {
             statements.add(declaration());
         }
 
-        consume(TokenType.RIGHT_BRACE, "Expect ')' after a statement.");
+        consume(TokenType.RIGHT_BRACE, "Expect '}' after a statement.");
         return statements;
     }
 

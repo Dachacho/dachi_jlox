@@ -96,7 +96,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
             }
             case TokenType.LESS_EQUAL -> {
                 if (left instanceof String && right instanceof String) {
-                    yield ((String) left).compareTo((String) right) < 0;
+                    yield ((String) left).compareTo((String) right) <= 0;
                 }
                 checkNumberOperands(expr.operator, left, right);
                 yield (double)left <= (double)right;

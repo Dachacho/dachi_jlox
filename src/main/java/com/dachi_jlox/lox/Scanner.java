@@ -81,15 +81,18 @@ public class Scanner {
                         advance();
                     }
                 }else if(match('*')){
-                    while(!isAtEnd() && !(peek() == '*' && peekNext() == '/')){
-                        if(peek() == '\n'){
+                    while(!isAtEnd() && !(peek() == '*' && peekNext() == '/')) {
+                        if (peek() == '\n') {
                             line++;
                         }
 
-                        if (!isAtEnd()) {
-                            advance();
-                            advance();
-                        }
+                        advance();
+                    }
+                    if (isAtEnd()) {
+                        Lox.error(line, "Unterminated block comment.");
+                    }else{
+                        advance();
+                        advance();
                     }
                 }
                 else{
