@@ -39,7 +39,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         if(distance != null){
             return environment.getAt(distance, name.getLexeme());
         }else{
-            return globals.get(name);
+            return environment.get(name);
         }
     }
 
@@ -190,6 +190,21 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         Object value =  evaluate(expr.value);
         ((LoxInstance)object).set(expr.name, value);
         return value;
+    }
+
+    @Override
+    public Object visitSuperExpr(Expr.Super expr) {
+        int distance = locals.get(expr);
+        LoxClass superclass = (LoxClass) environment.getAt(distance, "super");
+
+        LoxInstance object = (LoxInstance) environment.getAt(distance - 1, "this");
+
+        LoxFunction method = superclass.findMethod(expr.method.getLexeme());
+        if(method == null){
+            throw new RuntimeError(expr.method, "Cannot find method " + expr.method.getLexeme() + ".");
+        }
+
+        return method.bind(object);
     }
 
     @Override
@@ -346,7 +361,13 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
                 throw new RuntimeError(stmt.superclass.name, "Superclass must be a class.");
             }
         }
+
         environment.define(stmt.name.getLexeme(), null);
+
+        if(stmt.superclass != null) {
+            environment = new Environment(environment);
+            environment.define("super", superclass);
+        }
 
         Map<String, LoxFunction> methods = new HashMap<>();
         Map<String, LoxFunction> staticMethods = new HashMap<>();
@@ -362,6 +383,11 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         }
 
         LoxClass klass = new LoxClass(stmt.name.getLexeme(), (LoxClass)superclass, methods, staticMethods);
+
+        if(superclass != null) {
+            environment = environment.enclosing;
+        }
+
         environment.assign(stmt.name, klass);
         return null;
     }

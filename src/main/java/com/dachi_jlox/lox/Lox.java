@@ -12,6 +12,9 @@ public class Lox {
     public static final Interpreter interpreter = new Interpreter();
     static boolean hadError = false;
     static boolean hadRuntimeError = false;
+
+    private static boolean isRepl = false;
+
     public static void main(String[] args) throws IOException {
         if(args.length > 1) {
             System.out.println("usage: jlox [script]");
@@ -35,6 +38,8 @@ public class Lox {
     }
 
     private static void runPrompt() throws IOException {
+        isRepl = true;
+
         InputStreamReader input = new InputStreamReader(System.in);
         BufferedReader reader = new BufferedReader(input);
 
@@ -53,7 +58,6 @@ public class Lox {
         Parser parser = new Parser(tokens);
         List<Stmt> stmts = parser.parse();
 
-
         if (hadError) {
             return;
         }
@@ -65,7 +69,7 @@ public class Lox {
             return;
         }
 
-        if(stmts.size() == 1 && stmts.getFirst() instanceof Stmt.Expression stmt){
+        if(isRepl && stmts.size() == 1 && stmts.getFirst() instanceof Stmt.Expression stmt){
             interpreter.interpretExpression(stmt.expression);
         }else{
             interpreter.interpret(stmts);
